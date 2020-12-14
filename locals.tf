@@ -1,6 +1,7 @@
 locals {
   # Merge in defaults
-  parameters_expanded = { for k, v in var.parameters : k => merge(
+  # https://github.com/hashicorp/terraform/issues/22263
+  parameters_prexpanded = { for k, v in var.parameters : k => { for p in flatten([v.path]) : (length(flatten([v.path])) > 1 ? "${k}-${p}" : k) => merge(
     {
       manage_parameter = var.manage_parameters
       environment      = var.environment
@@ -9,7 +10,9 @@ locals {
       initial_data     = {}
     },
     v,
-  ) }
+    { path = p },
+  ) } }
+  parameters_expanded = merge(flatten([[ for k, v in local.parameters_prexpanded : v ]])...)
 
   resource_parameters = { for k, v in local.parameters_expanded : k => v if v.manage_parameter }
   data_parameters     = { for k, v in local.parameters_expanded : k => v if ! v.manage_parameter }
@@ -20,7 +23,7 @@ locals {
   )
 
   data_map = {
-    for k, v in local.parameters_expanded :
-    k => v.manage_parameter ? yamldecode(aws_ssm_parameter.miamioh_data[k].value) : yamldecode(data.aws_ssm_parameter.miamioh_data[k].value)
-  }
+    for k, v in local.parameters_prexpanded : k => merge([ for pk, pv in v :
+    pv.manage_parameter ? yamldecode(aws_ssm_parameter.miamioh_data[pk].value) : yamldecode(data.aws_ssm_parameter.miamioh_data[pk].value)
+  ]...) }
 }
