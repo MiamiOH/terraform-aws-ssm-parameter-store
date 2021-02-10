@@ -13,6 +13,12 @@ variable "manage_parameters" {
   description = "Whether or not to precreate and manage the ssm_parameters"
 }
 
+variable "update_parameters" {
+  type        = bool
+  default     = false
+  description = "Whether or not to override changes and allow destroy on the ssm_parameters - only useful when manage_parameters"
+}
+
 variable "environment" {
   type        = string
   description = "The environment used. 'all' may be used here instead if the secret is the same in all environments"

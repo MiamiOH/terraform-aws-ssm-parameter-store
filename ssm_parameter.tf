@@ -2,9 +2,13 @@
 resource "aws_ssm_parameter" "miamioh_data" {
   for_each = local.resource_parameters
 
-  lifecycle {
-    prevent_destroy = true
-    ignore_changes  = [value]
+  dynamic "lifecycle" {
+    for_each = range(var.update_parameters ? 0 : 1)
+
+    content {
+      prevent_destroy = true
+      ignore_changes  = [value]
+    }
   }
 
   name  = "/${join("/", compact([join("-", compact([each.value.environment, each.value.share])), trimprefix(each.value.path, "/"), each.value.name]))}"
