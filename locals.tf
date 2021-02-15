@@ -13,7 +13,7 @@ locals {
     v,
     { path = p },
   ) } }
-  parameters_expanded = merge(flatten([[ for k, v in local.parameters_prexpanded : v ]])...)
+  parameters_expanded = merge(flatten([[for k, v in local.parameters_prexpanded : v]])...)
 
   resource_parameters_m = { for k, v in local.parameters_expanded : k => v if v.manage_parameter && ! v.update_parameter }
   resource_parameters_u = { for k, v in local.parameters_expanded : k => v if v.update_parameter }
@@ -25,7 +25,7 @@ locals {
   )
 
   data_map = {
-    for k, v in local.parameters_prexpanded : k => merge([ for pk, pv in v :
-    pv.update_parameter ? yamldecode(aws_ssm_parameter.miamioh_data_updates[pk].value) : pv.manage_parameter ? yamldecode(aws_ssm_parameter.miamioh_data[pk].value) : yamldecode(data.aws_ssm_parameter.miamioh_data[pk].value)
+    for k, v in local.parameters_prexpanded : k => merge([for pk, pv in v :
+      pv.update_parameter ? yamldecode(aws_ssm_parameter.miamioh_data_updates[pk].value) : pv.manage_parameter ? yamldecode(aws_ssm_parameter.miamioh_data[pk].value) : yamldecode(data.aws_ssm_parameter.miamioh_data[pk].value)
   ]...) }
 }
