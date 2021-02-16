@@ -35,7 +35,7 @@ module "miamioh_data" {
 
 AWS Parameter store has a limit on chars for the Standard (free) parameters. It is a frequent pattern that we break up our data into several parameters and merge them together. This module can handle the merging for you if you specify a list of paths.
 
-``hcl
+```hcl
 module "miamioh_data" {
   source      = "git::https://github.com/MiamiOH/terraform-aws-ssm-parameter-store?ref=master"
   environment = "test"
