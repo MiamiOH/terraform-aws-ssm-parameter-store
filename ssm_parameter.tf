@@ -1,14 +1,10 @@
 # Manage resource
 resource "aws_ssm_parameter" "miamioh_data" {
-  for_each = local.resource_parameters
+  for_each = local.resource_parameters_m
 
-  dynamic "lifecycle" {
-    for_each = range(var.update_parameters ? 0 : 1)
-
-    content {
-      prevent_destroy = true
-      ignore_changes  = [value]
-    }
+  lifecycle {
+    prevent_destroy = true
+    ignore_changes  = [value]
   }
 
   name  = "/${join("/", compact([join("-", compact([each.value.environment, each.value.share])), trimprefix(each.value.path, "/"), each.value.name]))}"
@@ -16,6 +12,18 @@ resource "aws_ssm_parameter" "miamioh_data" {
   value = yamlencode(each.value.initial_data)
 
   description = "Added by terraform aws_ssm_parameter"
+  tags        = local.all_tags
+}
+
+# Manage resource with updates
+resource "aws_ssm_parameter" "miamioh_data_updates" {
+  for_each = local.resource_parameters_u
+
+  name  = "/${join("/", compact([join("-", compact([each.value.environment, each.value.share])), trimprefix(each.value.path, "/"), each.value.name]))}"
+  type  = "SecureString"
+  value = yamlencode(each.value.initial_data)
+
+  description = "Added by terraform aws_ssm_parameter with updates"
   tags        = local.all_tags
 }
 
