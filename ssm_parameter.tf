@@ -1,6 +1,6 @@
 # Manage resource
 resource "aws_ssm_parameter" "miamioh_data" {
-  for_each = local.resource_parameters_m
+  for_each = local.resource_parameters
 
   lifecycle {
     prevent_destroy = true
@@ -17,7 +17,7 @@ resource "aws_ssm_parameter" "miamioh_data" {
 
 # Manage resource with updates
 resource "aws_ssm_parameter" "miamioh_data_updates" {
-  for_each = local.resource_parameters_u
+  for_each = local.update_parameters_expanded
 
   name  = "/${join("/", compact([join("-", compact([each.value.environment, each.value.share])), trimprefix(each.value.path, "/"), each.value.name]))}"
   type  = "SecureString"
@@ -34,5 +34,5 @@ data "aws_ssm_parameter" "miamioh_data" {
 }
 
 output "data" {
-  value = local.data_map
+  value = merge(local.data_map, local.update_data_map)
 }

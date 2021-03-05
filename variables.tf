@@ -14,9 +14,9 @@ variable "manage_parameters" {
 }
 
 variable "update_parameters" {
-  type        = bool
-  default     = false
-  description = "Whether or not to override changes and allow destroy on the ssm_parameters - implies manage_parameters"
+  type        = any
+  default     = {}
+  description = "A map of maps containing path for each item at minimum. These parameters override changes and allow destroy on the ssm_parameters - implies manage_parameters"
 }
 
 variable "environment" {
@@ -33,6 +33,7 @@ variable "default_share" {
 
 variable "parameters" {
   type        = any
+  default     = {}
   description = "A map of maps containing path for each item at minimum"
 }
 
