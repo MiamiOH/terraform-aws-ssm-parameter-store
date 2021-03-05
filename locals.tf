@@ -1,7 +1,7 @@
 locals {
   # Merge in defaults
   # https://github.com/hashicorp/terraform/issues/22263
-  parameters_prexpanded = { for k, v in var.parameters : k => { for p in flatten([v.path]) : (length(flatten([v.path])) > 1 ? "${k}-${p}" : k) => merge(
+  parameters_prexpanded = { for k, v in var.parameters : k => { for p in flatten([v]) : (length(flatten([v])) > 1 ? "${k}-${p.path}" : k) => merge(
     {
       manage_parameter = var.manage_parameters
       environment      = var.environment
@@ -9,20 +9,18 @@ locals {
       name             = ""
       initial_data     = {}
     },
-    v,
-    { path = p },
+    p,
   ) } }
   parameters_expanded = merge(flatten([[for k, v in local.parameters_prexpanded : v]])...)
 
-  update_parameters_prexpanded = { for k, v in var.update_parameters : k => { for p in flatten([v.path]) : (length(flatten([v.path])) > 1 ? "${k}-${p}" : k) => merge(
+  update_parameters_prexpanded = { for k, v in var.update_parameters : k => { for p in flatten([v]) : (length(flatten([v])) > 1 ? "${k}-${p.path}" : k) => merge(
     {
       environment      = var.environment
       share            = var.default_share
       name             = ""
       initial_data     = {}
     },
-    v,
-    { path = p },
+    p,
   ) } }
   update_parameters_expanded = merge(flatten([[for k, v in local.update_parameters_prexpanded : v]])...)
 
