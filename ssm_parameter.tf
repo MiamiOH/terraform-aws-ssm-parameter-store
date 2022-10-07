@@ -36,4 +36,6 @@ data "aws_ssm_parameter" "miamioh_data" {
 
 output "data" {
   value = merge(local.data_map, local.merge_data_map)
+
+  sensitive = true
 }
