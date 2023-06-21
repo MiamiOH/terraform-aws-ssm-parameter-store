@@ -37,8 +37,8 @@ locals {
 
   data_map = merge(
     { for k, v in local.parameters_expanded : k => yamldecode(data.aws_ssm_parameter.miamioh_data[k].value) },
-    { for k, v in local.manage_parameters_expanded : k => yamldecode(aws_ssm_parameter.miamioh_data[k].value) },
-    { for k, v in local.update_parameters_expanded : k => yamldecode(aws_ssm_parameter.miamioh_data_update[k].value) },
+    { for k, v in local.manage_parameters_expanded : k => yamldecode(aws_ssm_parameter.miamioh_data[k].value) if can(aws_ssm_parameter.miamioh_data[k]) },
+    { for k, v in local.update_parameters_expanded : k => yamldecode(aws_ssm_parameter.miamioh_data_update[k].value) if can(aws_ssm_parameter.miamioh_data_update[k]) },
   )
 
   merge_data_map = {
