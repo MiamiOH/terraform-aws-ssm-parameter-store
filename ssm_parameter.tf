@@ -24,7 +24,6 @@ resource "aws_ssm_parameter" "miamioh_data_update" {
   value = yamlencode(each.value.initial_data)
 
   description = "Added by terraform aws_ssm_parameter with updates"
-  overwrite   = true
   tags        = local.all_tags
 }
 
