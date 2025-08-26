@@ -34,8 +34,24 @@ data "aws_ssm_parameter" "miamioh_data" {
   name     = "/${join("/", compact([join("-", compact([each.value.environment, each.value.share])), trimprefix(each.value.path, "/"), each.value.name]))}"
 }
 
+
 output "data" {
   value = merge(local.data_map, local.merge_data_map)
 
   sensitive = true
+}
+
+resource "aws_ssm_parameter" "miamioh_data_to_remove" {
+  for_each = local.remove_parameters_expanded
+
+  lifecycle {
+    ignore_changes  = [value]
+  }
+
+  name  = "/${join("/", compact([join("-", compact([each.value.environment, each.value.share])), trimprefix(each.value.path, "/"), each.value.name]))}"
+  type  = "SecureString"
+  value = yamlencode(each.value.initial_data)
+
+  description = "Added by terraform aws_ssm_parameter"
+  tags        = local.all_tags
 }

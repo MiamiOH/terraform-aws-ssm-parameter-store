@@ -37,6 +37,12 @@ variable "update_parameters" {
   default     = {}
 }
 
+variable "remove_parameters" {
+  type        = any
+  description = "A map of string to remove from state"
+  default     = {}
+}
+
 variable "merges" {
   type        = map(list(string))
   description = "A map of items you would like merged"
