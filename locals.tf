@@ -44,4 +44,14 @@ locals {
   merge_data_map = {
     for k, v in var.merges : k => merge([for vk in v : local.data_map[vk]]...)
   }
+
+    remove_parameters_expanded = { for k, v in var.remove_parameters : k => merge(
+    {
+      environment  = var.environment
+      share        = var.default_share
+      name         = ""
+      initial_data = {}
+    },
+    v,
+  ) }
 }
